@@ -18,9 +18,15 @@ const CountryList = ({ countries }) => {
   }
   return (
     <div>
-      {countries.map((country) => (
-        <p key={country.cca2}>{country.name.common}</p>
-      ))}
+      {countries.map((country, index) => {
+        return (
+          <>
+            <p key={country.cca2}>{country.name.common}</p>
+            <button key={index} onClick={() => console.log({ index })}>Show more</button>
+          </>
+        )
+      }
+      )}
     </div>
   );
 };

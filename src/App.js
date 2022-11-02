@@ -13,10 +13,14 @@ const Input = ({ handleChange }) => {
 };
 
 const CountryInfo = ({ countries }) => {
+  if (countries.length > 10) {
+    return (<p>GHAGA</p>)
+  }
   return (
     <div>
+
       {countries.map((country) => (
-        <p key={country.cioc}>{country.name.common}</p>
+        <p key={country.cca2}>{country.name.common}</p>
       ))}
     </div>
   )
@@ -27,7 +31,7 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const url = searchQuery === '' ? 'https://restcountries.com/v3.1/all' : `https://restcountries.com/v3.1/name/${searchQuery}`
+    const url = 'https://restcountries.com/v3.1/all';
     axios
       .get(url)
       .then((response) => {
@@ -35,7 +39,7 @@ const App = () => {
         setCountries(response.data);
       })
       .catch((e) => console.log(e));
-  }, [searchQuery]);
+  }, []);
 
   const handleChange = (event) => {
     setSearchQuery(event.target.value)

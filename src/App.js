@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 
 import axios from "axios";
 
+const api_key = process.env.REACT_APP_API_KEY
+
 const Input = ({ handleChange }) => {
   return (
     <div>
@@ -12,27 +14,47 @@ const Input = ({ handleChange }) => {
   );
 };
 
+const CountryListItem = ({ country }) => {
+  const [showDetails, setShowDetails] = useState(false);
+
+  return (
+    <div>
+      <p key={country.cca2}>{country.name.common}</p>
+      <button onClick={() => setShowDetails(!showDetails)}>{showDetails ? "Hide details" : "Show details"}</button>
+      {showDetails ? <CountryDetails country={country} /> : null}
+    </div>
+  )
+}
+
 const CountryList = ({ countries }) => {
   if (countries.length > 10) {
     return <p>Too many matches, specify another filter</p>;
   }
   return (
     <div>
-      {countries.map((country, index) => {
-        return (
-          <>
-            <p key={country.cca2}>{country.name.common}</p>
-            <button key={index} onClick={() => console.log({ index })}>Show more</button>
-          </>
-        )
-      }
+      {countries.map((country, index) => (
+        <CountryListItem country={country} />
+      )
       )}
     </div>
   );
 };
 
 const CountryDetails = ({ country }) => {
-  console.log(country.flags.png)
+  const [weather, setWeather] = useState();
+
+  console.log(api_key);
+  useEffect(() => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${country.capital}&appid=${api_key}&units=metric`;
+    axios
+      .get(url)
+      .then((response) => {
+        console.log(response.data);
+        setWeather(response.data);
+      })
+      .catch((e) => console.log(e));
+  }, [country]);
+
   return (
     <div>
       <h2>{country.name.common}</h2>
@@ -53,6 +75,20 @@ const CountryDetails = ({ country }) => {
 
       <h3>flag img</h3>
       <img src={country.flags.png}></img>
+
+
+      {weather ? <div><h3>Weather in {country.capital}</h3>
+
+        <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="icon" />
+        <p>
+          <strong>Temperature: </strong>
+          {weather.main.temp}
+        </p>
+        <p><strong>wind: <br /></strong>{weather.wind.speed} mph <br /> direction {weather.wind.deg}</p></div>
+        : <div>...loading</div>}
+
+      <hr />
+
     </div>);
 };
 
